@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Usage: keployr "tag1,tag2"
+
+KEPLOYR_TAGS=${1:-untagged,always}
+
+set -ex
+
+exec ansible-playbook ${KEPLOYR_FILE} \
+    --tags=${KEPLOYR_TAGS} \
+    -i localhost,
