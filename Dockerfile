@@ -66,6 +66,7 @@ FROM base
   ENV LOCALHOST_WARNING           False
   ENV KEPLOYR_HOME                /opt/keployr/app
   ENV ANSIBLE_CONFIG              $KEPLOYR_HOME/ansible.cfg
+  ENV PATH                        $PATH:$KEPLOYR_HOME/bin
 
   COPY --from=helm_builder      /usr/bin/helm       /usr/bin/helm
   COPY --from=kustomize_builder /usr/bin/kustomize  /usr/bin/kustomize
