@@ -42,7 +42,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             ansible_version=2.11
-		        cidre_version=0.12.1
-		        helm_version=3.7.1
-		        keployr_version=1.0.0
-		        BUILDKIT_INLINE_CACHE=1
+            cidre_version=0.12.1
+            helm_version=3.7.1
+            keployr_version=1.0.0
+            BUILDKIT_INLINE_CACHE=1
