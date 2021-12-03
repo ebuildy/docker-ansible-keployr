@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# Usage: keployr "tag1,tag2"
+
+KEPLOYR_TAGS=${1:-untagged,always}
+
+#: "${KEPLOYR_USER:=$USER}"
+export NO_PROXY=${NO_PROXY},${MY_NO_PROXY}
+
+#echo "Using kubeconfig at ${KUBECONFIG} ${KUBECONFIG_NAME}"
+
+#[ -n "${KUBECONFIG}" ] && chmod go-r ${KUBECONFIG}
+
+if [[ -n "$KEPLOYR_USER" ]]; then
+  echo "Using user $KEPLOYR_USER"
+
+  adduser -u $KEPLOYR_USER_UID $KEPLOYR_USER || true
+
+  MY_USER=$(getent passwd $KEPLOYR_USER_UID | cut -d: -f1)
+
+  exec su ${MY_USER} -c "
+
+    set -ex
+
+    exec ansible-playbook ${KEPLOYR_FILE} \
+          --extra-vars=@${KEPLOYR_HOME}/env/common.yaml \
+          --extra-vars=@${KEPLOYR_HOME}/env/${INFRA_ENV}.yaml \
+          --tags=${KEPLOYR_TAGS} \
+          --skip-tags=${KEPLOYR_SKIP_TAGS} \
+          --connection=local \
+          -i localhost, ;
+
+    "
+
+else
+
+  set -ex
+
+  exec ansible-playbook ${KEPLOYR_FILE} \
+        --extra-vars=@${KEPLOYR_HOME}/env/common.yaml \
+        --extra-vars=@${KEPLOYR_HOME}/env/${INFRA_ENV}.yaml \
+        --tags=${KEPLOYR_TAGS} \
+        --skip-tags=${KEPLOYR_SKIP_TAGS} \
+        --connection=local \
+        -i localhost,
+
+fi

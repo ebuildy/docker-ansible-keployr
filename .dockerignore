@@ -1,0 +1,6 @@
+docker-compose.yml
+.gitlab-ci.yml
+gitlab-ci-keployr.yml
+gitlab_ci_playbook.yaml
+Makefile
+test

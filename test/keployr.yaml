@@ -1,0 +1,40 @@
+---
+- name: Debug stuff
+  hosts: localhost
+  connection: local
+
+  vars:
+    build_dir: "./build"
+    keployr_stack: keployr
+    keployr_component: test
+
+    keployr_deploy_version: "{{ lookup('file', '../VERSION') }}"
+    keployr_project_name: "consolidation"
+    keployr_deploy_author: "{% if lookup('env', 'GITLAB_USER_EMAIL') | length == 0 %}{{ lookup('env', 'USER') }}{% else %}{{ lookup('env', 'GITLAB_USER_EMAIL') }}{% endif %}"
+
+  roles:
+  - ebuildy.keployr.devop
+
+  tasks:
+
+  - name: Print k8s config
+    debug:
+      var: k8s
+
+  - name: Install some Helm charts.
+    shell: "helm repo add {{ item.name }} {{ item.url }}"
+    with_items:
+    - {name: "elastic", url: "https://helm.elastic.co"}
+    - {name: "stable", url: "https://charts.helm.sh/stable"}
+
+  - name: Print deploy info
+    debug:
+      msg: "I am the version {{ keployr_deploy_version }} by {{ keployr_deploy_author }} of project {{ keployr_project_name }}"
+
+  - name: Test git
+    shell:
+      chdir: /tmp
+      cmd: |
+        git clone {{ lookup('env', 'TEST_GIT_URL') }} build
+        cd build
+        git status

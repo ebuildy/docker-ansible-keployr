@@ -1,0 +1,21 @@
+---
+- name: Debug stuff
+  hosts: localhost
+  connection: local
+
+  vars:
+    build_dir: "~/keployr_build"
+    keployr_stack: keployr
+    keployr_component: test
+
+  tasks:
+  - name: Get Helm version
+    shell: "helm version"
+    register: result
+
+  - debug:
+      var: result.stdout_lines
+
+  - name: Print k8s config
+    debug:
+      var: k8s

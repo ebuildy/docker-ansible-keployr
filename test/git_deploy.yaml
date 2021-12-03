@@ -1,0 +1,10 @@
+---
+
+- name: Debug stuff
+  hosts: localhost
+  connection: local
+
+  vars: {}
+
+  roles:
+  - ebuildy.keployr.devop
