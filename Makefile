@@ -5,5 +5,5 @@ build:
 		--build-arg helm_version=3.7.1 \
 		--build-arg keployr_version=1.0.0 \
 		--build-arg BUILDKIT_INLINE_CACHE=1 \
-		--platform linux/amd64 \
+		--platform linux/arm64v8 \
 		-t local-keployr .

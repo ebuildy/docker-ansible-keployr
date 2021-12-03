@@ -44,9 +44,6 @@ FROM base AS kustomize_builder
 
 FROM base
 
-  ENV TINI_VERSION v0.19.0
-  ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-  
   RUN pip3 install pygments jsonschema boto3
 
   ENV ANSIBLE_COLLECTIONS_PATHS   /opt/keployr
@@ -69,8 +66,6 @@ FROM base
   ENV LOCALHOST_WARNING           False
   ENV KEPLOYR_HOME                /opt/keployr/app
   ENV ANSIBLE_CONFIG              $KEPLOYR_HOME/ansible.cfg
-  ENV KEPLOYR_TASKS_DIR           $KEPLOYR_HOME/roles/keployr/tasks
-  ENV PATH                        $PATH:$KEPLOYR_HOME/bin:/opt/tools
 
   COPY --from=helm_builder      /usr/bin/helm       /usr/bin/helm
   COPY --from=kustomize_builder /usr/bin/kustomize  /usr/bin/kustomize
@@ -81,10 +76,6 @@ FROM base
         /usr/share/locale/ \
         /var/cache/apk/*
 
-  ADD app               $KEPLOYR_HOME
-  ADD entrypoint.sh     /entrypoint.sh
-  RUN chmod +x          /tini    /entrypoint.sh
+  ADD app $KEPLOYR_HOME
 
   WORKDIR $KEPLOYR_HOME
-
-  ENTRYPOINT ["/tini", "--", "/entrypoint.sh"]
