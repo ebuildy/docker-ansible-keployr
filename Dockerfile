@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
-ARG ansible_version
+ARG ansible_base_version
 
-FROM cytopia/ansible:${ansible_version}-tools AS base
+FROM cytopia/ansible:${ansible_base_version} AS base
 
   RUN apk add --update --no-cache git openssh curl ca-certificates make
 
@@ -21,6 +21,8 @@ FROM base AS helm_builder
       chmod +x /usr/bin/helm && \
       rm -rf linux-amd64 && \
       helm version
+
+  RUN helm plugin install https://github.com/chartmuseum/helm-push.git
 
 
 # ----------------------------------------------------------------------------------------------------------------------------------
@@ -68,8 +70,10 @@ FROM base
   ENV ANSIBLE_CONFIG              $KEPLOYR_HOME/ansible.cfg
   ENV PATH                        $PATH:$KEPLOYR_HOME/bin
 
-  COPY --from=helm_builder      /usr/bin/helm       /usr/bin/helm
-  COPY --from=kustomize_builder /usr/bin/kustomize  /usr/bin/kustomize
+  COPY --from=helm_builder      /usr/bin/helm                         /usr/bin/helm
+  COPY --from=helm_builder      /root/.local/share/helm/plugins       /home/ansible/.local/share/helm/plugins
+  COPY --from=helm_builder      /root/.local/share/helm/plugins       /root/.local/share/helm/plugins
+  COPY --from=kustomize_builder /usr/bin/kustomize                    /usr/bin/kustomize
 
   RUN rm -rf \
         /usr/share/doc/ \
