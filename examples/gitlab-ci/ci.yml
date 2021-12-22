@@ -1,0 +1,49 @@
+variables:
+  KEPLOYR_FILE: ./src/keployr.yaml
+  KEPLOYR_VARS_DIR: ../.common/src/env
+  GIT_SSL_NO_VERIFY: "true"
+  GIT_SUBMODULE_STRATEGY: recursive
+
+.keployr:
+  image: ghcr.io/ebuildy/keployr:v0.0.12
+  before_script:
+    - git config --global http.sslVerify "false"
+    - git submodule init
+    - git submodule update --recursive --remote
+  script: |
+    make ${KEPLOYR_ACTION} -j4
+
+.env_dev:
+  variables:
+    KEPLOYR_ENV: "dev"
+
+.action_build:
+  stage: build
+  variables:
+    KEPLOYR_ACTION: keployr/build
+
+.action_deploy:
+  variables:
+    KEPLOYR_ACTION: keployr/deploy
+
+stages:
+- build
+- deploy
+
+build-dev:
+  extends:
+  - .keployr
+  - .env_dev
+  - .action_build
+  artifacts:
+    paths:
+    - build/dev
+
+deploy-dev:
+  stage: deploy
+  extends:
+  - .keployr
+  - .env_dev
+  - .action_deploy
+  needs: ["build-dev"]
+
