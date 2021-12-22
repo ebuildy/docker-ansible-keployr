@@ -1,5 +1,9 @@
 ## Docker image
 
+```
+docker pull ghcr.io/ebuildy/keployr:latest
+```
+
 ### programs
 
 - kubectl
