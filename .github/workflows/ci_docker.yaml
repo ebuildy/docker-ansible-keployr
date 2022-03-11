@@ -15,12 +15,13 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     strategy:
+      max-parallel: 2
       matrix:
         include:
         - helm: 3.5.4
           docker_tag: helm-3.5
-        - helm: 3.9.0
-          docker_tag: helm-3.9
+        - helm: 3.8.1
+          docker_tag: helm-3.8
     steps:
 
       - name: Check Out Repo 
@@ -40,22 +41,6 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      -
-        name: Build and push
-        id: docker_build_latest
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          context: .
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            ansible_base_version=2.11-tools-0.39
-            cidre_version=0.12.1
-            helm_version=3.9.0
-            keployr_version=1.0.7
-            BUILDKIT_INLINE_CACHE=1
 
       -
         name: Build and push
