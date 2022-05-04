@@ -59,6 +59,7 @@ FROM base
   RUN ansible-galaxy collection install \
         community.general \
         community.kubernetes \
+        community.aws:==3.2.1 \
         ebuildy.cidre:==${cidre_version} \
         ebuildy.keployr:==${keployr_version} \
         -vvv
